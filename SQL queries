@@ -1,0 +1,161 @@
+I will create a SQL CREATE TABLE statement for the user_submissions table based on 
+the structure and data types identified in the dataset.
+
+CREATE TABLE user_submissions (
+    id BIGINT PRIMARY KEY,
+    user_id BIGINT,
+    question_id BIGINT,
+    points INT,
+    submitted_at TIMESTAMP WITH TIME ZONE,
+    username VARCHAR(255)
+);
+
+This SQL CREATE TABLE statement defines a table named user_submissions with 
+columns corresponding to the dataset you provided. 
+The data types have been chosen to best represent the information in each column:
+•id: BIGINT and PRIMARY KEY to ensure a unique identifier for each submission.
+•user_id: BIGINT to accommodate large user identifiers.
+•question_id: BIGINT for question identifiers.
+•points: INT for the points awarded.
+•submitted_at: TIMESTAMP WITH TIME ZONE to store the submission timestamp, preserving timezone information.
+•username: VARCHAR(255) for the username, allowing for a variable-length string up to 255 characters.
+
+
+### Q.1 Distinct Users and Their Stats
+*List all distinct users, their total submissions, and total points earned.*
+
+**SQL Query:**
+```sql
+SELECT 
+    username, 
+    COUNT(*) AS total_submissions, 
+    SUM(points) AS points_earned
+FROM user_submissions
+GROUP BY username
+ORDER BY points_earned DESC;
+```
+
+**Output (Top 5):**
+| username | total_submissions | points_earned |
+| :--- | :--- | :--- |
+| bhavin0952 | 107 | 4350 |
+| najir_11320 | 51 | 4120 |
+| harshavardhan29 | 79 | 3360 |
+| pradeep2449 | 45 | 2180 |
+| pushpakgaikwad12 | 14 | 1990 |
+
+---
+
+### Q.2 Daily Average Points for Each User
+*Calculate the daily average points for each user.*
+
+**SQL Query:**
+```sql
+SELECT 
+    username, 
+    DATE(submitted_at) AS submission_date, 
+    AVG(points) AS daily_avg_points
+FROM user_submissions
+GROUP BY username, submission_date
+ORDER BY submission_date DESC, username ASC;
+```
+
+**Output (Sample of Recent Dates):**
+| username | submission_date | daily_avg_points |
+| :--- | :--- | :--- |
+| anishkumar451 | 2024-11-06 | -30.00 |
+| badhri16 | 2024-11-06 | 17.14 |
+| gryffin31 | 2024-11-06 | 65.00 |
+| harshavardhan29 | 2024-11-06 | 15.00 |
+| najir_11320 | 2024-11-06 | 103.33 |
+
+---
+
+### Q.3 Top 3 Users with Most Positive Submissions per Day
+*Find the top 3 users with the most positive submissions (points > 0) for each day.*
+
+**SQL Query:**
+```sql
+WITH DailyPositive AS (
+    SELECT 
+        DATE(submitted_at) AS submission_date, 
+        username, 
+        COUNT(*) AS positive_count,
+        RANK() OVER (PARTITION BY DATE(submitted_at) ORDER BY COUNT(*) DESC, username ASC) as rank
+    FROM user_submissions
+    WHERE points > 0
+    GROUP BY submission_date, username
+)
+SELECT submission_date, username, positive_count
+FROM DailyPositive
+WHERE rank <= 3
+ORDER BY submission_date DESC, rank ASC;
+```
+
+**Output (Sample of Recent Dates):**
+| submission_date | username | positive_count |
+| :--- | :--- | :--- |
+| 2024-11-06 | srinivasareddy0357 | 8 |
+| 2024-11-06 | push12. | 7 |
+| 2024-11-06 | badhri16 | 3 |
+| 2024-11-05 | mansi6806 | 16 |
+| 2024-11-05 | najir_11320 | 14 |
+
+---
+
+### Q.4 Top 5 Users with Highest Incorrect Submissions
+*Find the top 5 users with the highest number of incorrect submissions (points ≤ 0).*
+
+**SQL Query:**
+```sql
+SELECT 
+    username, 
+    COUNT(*) AS incorrect_count
+FROM user_submissions
+WHERE points <= 0
+GROUP BY username
+ORDER BY incorrect_count DESC
+LIMIT 5;
+```
+
+**Output:**
+| username | incorrect_count |
+| :--- | :--- |
+| bhavin0952 | 50 |
+| harshavardhan29 | 39 |
+| badhri16 | 23 |
+| adventurous_unicorn_71057 | 22 |
+| pradeep2449 | 19 |
+
+---
+
+### Q.5 Top 10 Performers for Each Week
+*Find the top 10 performers for each week based on total points.*
+
+**SQL Query:**
+```sql
+WITH WeeklyStats AS (
+    SELECT 
+        STRFTIME('%Y-%W', submitted_at) AS week_id,
+        username,
+        SUM(points) AS total_points,
+        RANK() OVER (PARTITION BY STRFTIME('%Y-%W', submitted_at) ORDER BY SUM(points) DESC) as rank
+    FROM user_submissions
+    GROUP BY week_id, username
+)
+SELECT week_id, username, total_points
+FROM WeeklyStats
+WHERE rank <= 10
+ORDER BY week_id DESC, total_points DESC;
+```
+
+**Output (Sample of Recent Weeks):**
+| week_id | username | total_points |
+| :--- | :--- | :--- |
+| 2024-45 | bhavin0952 | 1910 |
+| 2024-45 | mansi6806 | 1630 |
+| 2024-45 | najir_11320 | 1580 |
+| 2024-44 | harshavardhan29 | 3110 |
+| 2024-44 | bhavin0952 | 2440 |
+
+*Note: Week IDs are formatted as YYYY-WW.*
