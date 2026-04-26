@@ -1,0 +1,17 @@
+the dataset is a record of user submissions for an SQL-related learning or competition platform. 
+It contains 649 rows and 6 columns, spanning a period from October 26, 2024, to November 6,
+2024.Dataset OverviewMetricValue , Total Submissions649Unique Users47 , Unique Questions265 , Date Range2024-10-26 to 2024-11-06 ,
+Average Points48.8
+
+Key Insights
+•User Activity: There are 47 unique users in the dataset. 
+The most active user is bhavin0952 with 107 submissions, followed by harshavardhan29 (79) and najir_11320 (51).
+•Point Distribution: The points vary significantly, with a minimum of -50 and a maximum of 220. Interestingly, 
+the most frequent point value is -10 (216 occurrences), which might indicate a penalty for incorrect submissions or
+a specific type of feedback.
+•Question Coverage: Users have attempted 265 different questions, suggesting a broad curriculum or a large pool of challenges.
+•Temporal Trend: The data captures approximately 11 days of activity, providing a snapshot of user engagement during this period.
+This dataset is well-structured with no missing values across any of the columns, making it suitable for 
+further analysis of user performance or questions difficulties. 
+
+
